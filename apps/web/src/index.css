@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* Tokens: switch default.css to org.css to change tokens. */
+/* Tokens: import one of default.css, darkmatter.css or org.css. */
 @import "./themes/default.css";
 
 @custom-variant dark (&:is(.dark *));

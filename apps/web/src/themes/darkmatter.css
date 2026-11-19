@@ -1,6 +1,7 @@
-/* Darkmatter tokens, from https://tweakcn.com (theme "darkmatter").
- * Monospace UI. Uses Geist Mono when it is available on the machine or loaded
- * by the app, and falls back to the system monospace font otherwise. */
+/* Darkmatter tokens, from https://tweakcn.com (theme "darkmatter"), with the
+ * sans font swapped for Inter. Inter is bundled and only loaded when this file
+ * is the imported theme. */
+@import "@fontsource-variable/inter";
 
 :root {
 	--background: oklch(1 0 0);
@@ -72,6 +73,6 @@
 }
 
 @theme inline {
-	--font-sans: "Geist Mono", ui-monospace, monospace;
+	--font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 }

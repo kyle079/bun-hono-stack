@@ -1,117 +1,70 @@
 # bun-hono-stack
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, and more.
+A TypeScript stack where each thing is defined once and everything else is derived from it: Drizzle tables produce the Zod schemas, Hono routes produce the typed client, and the web app uses both.
 
-## Features
+- Bun (runtime and package manager), Turborepo, Biome
+- `apps/server`: Hono API, Hono RPC, Better Auth (email/password, optional SSO)
+- `apps/web`: React, Vite, TanStack Router/Query/Table/Form, shadcn primitives, Tailwind
+- `packages/db`: Drizzle schema and Postgres
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Hono** - Lightweight, performant server framework
-- **Bun** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Turborepo** - Optimized monorepo build system
-- **Biome** - Linting and formatting
+<!-- template:start -->
+## Create a project
 
-## Getting Started
+Requires [Bun](https://bun.sh) and, for local Postgres, Docker.
 
-First, install the dependencies:
+```bash
+bun create kyle079/bun-hono-stack my-app
+```
+
+This creates `./my-app` in the directory you run it from. The create step downloads the template, sets the root package name to `my-app`, runs `bun install`, and then runs `scripts/rename.ts`. That script replaces `bun-hono-stack` with your project name everywhere (package scope, imports, page title, Docker and database names, docs), reinstalls so the lockfile matches, runs Biome to re-sort imports, folds the result into the initial commit, and deletes itself. Names are normalised to lowercase letters, digits and hyphens.
+
+<!-- template:end -->
+## Setup
+
+Requires [Bun](https://bun.sh) and Docker (for local Postgres).
 
 ```bash
 bun install
 ```
 
-## Database Setup
+Theme tokens are switched in `apps/web/src/index.css`; see [CONVENTIONS.md](CONVENTIONS.md#6-themes-and-components).
 
-This project uses PostgreSQL with Drizzle ORM.
+## Environment
 
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
+Each app declares its variables in `.env.schema` (validated and typed by [varlock](https://varlock.dev)); `bun install` generates the typed `src/env.ts` files. Local defaults for the URLs and the database are in the schema. Create `apps/server/.env` with the one value that has no default:
 
-3. Apply the schema to your database:
+```
+BETTER_AUTH_SECRET=<at least 32 random characters>
+```
+
+The `SSO_*` variables are optional and blank by default. Fill in `SSO_DOMAIN`, `SSO_ISSUER`, `SSO_CLIENT_ID` and `SSO_CLIENT_SECRET` to register an OIDC provider. Real `.env` files are git-ignored.
+
+## Run locally
 
 ```bash
-bun run db:push
+bun run db:start     # Postgres in Docker on port 5432
+bun run db:push      # apply the schema (there are no migrations or seed data)
+bun run dev          # web on http://localhost:3001, API on http://localhost:3000
 ```
 
-Then, run the development server:
+Other commands: `bun run check` (Biome, writes fixes), `bun run check-types`, `bun test`, `bun run build`. The full list is in [AGENTS.md](AGENTS.md).
+
+## Production
+
+One container: the Hono server serves the built web app and the API from the same origin.
 
 ```bash
-bun run dev
+docker build -t bun-hono-stack .
+docker run -p 3000:3000 \
+  -e DATABASE_URL=postgresql://user:password@host:5432/dbname \
+  -e BETTER_AUTH_SECRET=<32+ characters> \
+  -e BETTER_AUTH_URL=https://app.example.com \
+  -e CORS_ORIGIN=https://app.example.com \
+  bun-hono-stack
 ```
 
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+`BETTER_AUTH_URL` and `CORS_ORIGIN` are the public URL of the container, over HTTPS (auth cookies are `Secure`). The image does not run migrations; apply your schema to the database separately.
 
-## UI Customization
+## Conventions
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
-
-```tsx
-import { Button } from "@bun-hono-stack/ui/components/button";
-```
-
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Environment Configuration
-
-Each app owns its environment schema in `.env.schema`. Varlock generates `src/env.ts` during installation; run `bun run env:generate` after changing a schema. Commit schemas, and keep secrets in ignored env files or your deployment platform.
-
-Import the generated `ENV` accessor in application code. Shared database and auth packages receive configuration or initialized clients from the application. See [Varlock's monorepo guide](https://varlock.dev/guides/monorepos/).
-
-Bun's automatic env loading is disabled in `bunfig.toml`; the framework integration or server bootstrap loads Varlock. Node deployments must include Varlock and its dependencies alongside the app schema.
-
-Run standalone Node/Bun tools that use Varlock from the owning app directory so they load that app's schema and env files. `env:generate` only generates TypeScript files; it does not initialize environment values in a subsequent command.
-
-## Git Hooks and Formatting
-
-- Run checks: `bun run check`
-
-## Project Structure
-
-```
-bun-hono-stack/
-├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
-```
-
-## Available Scripts
-
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:server`: Start only the server
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
-- `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Biome formatting and linting
-
-## Better Auth Schema Generation
-
-After changing auth plugins or schema options, run `bun run auth:generate` from the project root. The script runs the Better Auth CLI through `varlock run` from the owning app directory, loading the auth instance from `src/services.ts`. Review the schema changes, then use your ORM's migration workflow to apply them.
+[CONVENTIONS.md](CONVENTIONS.md) describes the layout, naming, how to add a resource, and what Biome and CI enforce.

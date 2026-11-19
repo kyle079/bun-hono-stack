@@ -24,6 +24,10 @@
 		}
 	},
 	"type": "module",
+	"bun-create": {
+		"postinstall": "bun scripts/rename.ts",
+		"start": "bun run dev"
+	},
 	"scripts": {
 		"dev": "turbo run dev",
 		"build": "turbo run build",
@@ -42,6 +46,7 @@
 		"postinstall": "varlock codegen --path ./apps/web/ && varlock codegen --path ./apps/server/ && varlock codegen --path ./packages/db/",
 		"auth:generate": "turbo run auth:generate -F @bun-hono-stack/server --",
 		"check": "biome check --write .",
+		"check:ci": "biome ci .",
 		"test": "bun test"
 	},
 	"dependencies": {

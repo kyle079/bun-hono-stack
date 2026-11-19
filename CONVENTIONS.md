@@ -12,9 +12,12 @@ apps/server/src/
   lib/                     auth.ts (Better Auth), db.ts (client), env.ts (generated)
 apps/web/src/
   routes/                  TanStack Router file routes; thin, they wire a feature to a URL
+    _public/               layout with the public header (/, /login)
+    _auth/                 layout with the app shell (sidebar + top bar) and the auth guard
   features/<resource>/     everything for one resource: page, table, form, queries.ts
-  components/              shared app-level components (header, sign-in form)
+  components/              shared app-level components; the shell is app-sidebar.tsx (nav array), nav-main.tsx, nav-user.tsx, page-breadcrumb.tsx
   components/ui/           shadcn primitives
+  hooks/                   React hooks (use-mobile.ts, from shadcn)
   lib/                     api.ts (Hono RPC client), auth-client.ts, utils.ts
   themes/                  CSS token sets
 packages/db/
@@ -41,8 +44,9 @@ The walk-through uses `items`. Use your resource's name and touch the same place
 4. **RPC client.** Nothing to write. `apps/web/src/lib/api.ts` creates `hc<AppType>()`, so `api.api.items.$get()` already exists with typed inputs and outputs.
 5. **Query options.** `apps/web/src/features/items/queries.ts` holds `queryOptions` and the mutation hooks. Types come from the client: `InferResponseType<typeof api.api.items.$get, 200>`, `InferRequestType<...>["json"]`.
 6. **Table and form.** `items-table.tsx` (TanStack Table) and `item-form.tsx` (TanStack Form). The form validates with the same `itemInsertSchema`, imported from `@bun-hono-stack/db/schema/items`.
-7. **Route file.** `apps/web/src/routes/_auth/items.tsx` calls `createFileRoute`, loads `itemsQueryOptions`, and renders `ItemsPage`.
-8. **Database.** Apply the new table with your own process; see section 8.
+7. **Route file.** `apps/web/src/routes/_auth/items.tsx` calls `createFileRoute`, sets `staticData: { title: "Items" }` (shown in the top bar breadcrumb), loads `itemsQueryOptions`, and renders `ItemsPage`.
+8. **Nav entry.** Add `{ title, icon, to }` to the `navItems` array in `apps/web/src/components/app-sidebar.tsx`. `to` is checked against the route tree. Use `items` on an entry for a collapsible group.
+9. **Database.** Apply the new table with your own process; see section 8.
 
 ## 4. Types: derive, never declare
 
@@ -66,6 +70,7 @@ If a type cannot be derived from one of these, the source of truth is missing a 
 ## 6. Themes and components
 
 - **Tokens:** `apps/web/src/index.css` has a single theme import, `@import "./themes/default.css";`. Change the file name to switch: `default.css` (plain shadcn), `darkmatter.css` (the tweakcn "darkmatter" theme with Plus Jakarta Sans as the sans font) or `rum.css` (RUM tokens; its dark values are derived, see the note in the file). Application code uses semantic tokens (`bg-background`, `text-foreground`) and does not hard-code colors.
+- **App shell:** signed-in pages render shadcn's `sidebar-07` block (a sidebar that collapses to icons) from `routes/_auth/route.tsx`. Other sidebar layouts, such as a right-hand sidebar or a file-tree sidebar, are project-specific: add them per project with the shadcn CLI; the template does not ship them.
 - **Components:** plain shadcn primitives in `apps/web/src/components/ui/`. Add new ones with the shadcn CLI from `apps/web` (`bunx shadcn@latest add <name>`); after that they are ordinary source you own.
 
 ## 7. Enforced and not enforced

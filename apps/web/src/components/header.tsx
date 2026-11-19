@@ -1,32 +1,21 @@
 import { Link } from "@tanstack/react-router";
 
+import { buttonVariants } from "@/components/ui/button";
+
 import { ModeToggle } from "./mode-toggle";
-import { UserMenu } from "./user-menu";
 
 export function Header() {
-	const links = [
-		{ to: "/", label: "Home" },
-		{ to: "/items", label: "Items" },
-	] as const;
-
 	return (
-		<div>
-			<div className="flex flex-row items-center justify-between px-2 py-1">
-				<nav className="flex gap-4 text-lg">
-					{links.map(({ to, label }) => {
-						return (
-							<Link key={to} to={to}>
-								{label}
-							</Link>
-						);
-					})}
-				</nav>
-				<div className="flex items-center gap-2">
-					<ModeToggle />
-					<UserMenu />
-				</div>
+		<header className="flex items-center justify-between border-b px-4 py-2">
+			<Link to="/" className="font-medium">
+				bun-hono-stack
+			</Link>
+			<div className="flex items-center gap-2">
+				<ModeToggle />
+				<Link to="/login" className={buttonVariants({ variant: "outline" })}>
+					Sign in
+				</Link>
 			</div>
-			<hr />
-		</div>
+		</header>
 	);
 }

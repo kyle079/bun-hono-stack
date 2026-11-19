@@ -65,7 +65,7 @@ If a type cannot be derived from one of these, the source of truth is missing a 
 
 ## 6. Themes and components
 
-- **Tokens:** `apps/web/src/index.css` has a single theme import, `@import "./themes/default.css";`. Change the file name to switch: `default.css` (plain shadcn), `darkmatter.css` (the tweakcn "darkmatter" theme with Inter as the sans font) or `rum.css` (RUM tokens; its dark values are derived, see the note in the file). Application code uses semantic tokens (`bg-background`, `text-foreground`) and does not hard-code colors.
+- **Tokens:** `apps/web/src/index.css` has a single theme import, `@import "./themes/default.css";`. Change the file name to switch: `default.css` (plain shadcn), `darkmatter.css` (the tweakcn "darkmatter" theme with Plus Jakarta Sans as the sans font) or `rum.css` (RUM tokens; its dark values are derived, see the note in the file). Application code uses semantic tokens (`bg-background`, `text-foreground`) and does not hard-code colors.
 - **Components:** plain shadcn primitives in `apps/web/src/components/ui/`. Add new ones with the shadcn CLI from `apps/web` (`bunx shadcn@latest add <name>`); after that they are ordinary source you own.
 
 ## 7. Enforced and not enforced

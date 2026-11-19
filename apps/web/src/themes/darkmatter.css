@@ -1,7 +1,7 @@
 /* Darkmatter tokens, from https://tweakcn.com (theme "darkmatter"), with the
- * sans font swapped for Inter. Inter is bundled and only loaded when this file
+ * sans font swapped for Plus Jakarta Sans. The font is bundled and only loaded when this file
  * is the imported theme. */
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/plus-jakarta-sans";
 
 :root {
 	--background: oklch(1 0 0);
@@ -73,6 +73,7 @@
 }
 
 @theme inline {
-	--font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+	--font-sans:
+		"Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
 	--font-mono: "JetBrains Mono", ui-monospace, monospace;
 }

@@ -1,7 +1,10 @@
+import { ssoClient } from "@better-auth/sso/client";
+import { adminClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 import { ENV } from "../env";
 
 export const authClient = createAuthClient({
-  baseURL: ENV.VITE_SERVER_URL,
+	baseURL: ENV.VITE_SERVER_URL,
+	plugins: [adminClient(), ssoClient()],
 });

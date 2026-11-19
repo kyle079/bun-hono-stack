@@ -1,3 +1,1 @@
-{
-  "extends": "@bun-hono-stack/config/tsconfig.base.json"
-}
+{ "extends": "./tsconfig.base.json" }

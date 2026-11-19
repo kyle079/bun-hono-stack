@@ -1,6 +1,0 @@
-{
-  "extends": "@bun-hono-stack/config/tsconfig.base.json",
-  "compilerOptions": {
-    "noEmit": true
-  }
-}

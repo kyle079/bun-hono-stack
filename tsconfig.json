@@ -1,0 +1,3 @@
+{
+  "extends": "@bun-hono-stack/config/tsconfig.base.json"
+}
